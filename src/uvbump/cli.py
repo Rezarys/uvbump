@@ -36,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="write nothing and exit 1 when a bound is behind the index (for CI)",
+        help="write nothing and exit 1 when a bound can be moved forward (for CI)",
     )
     parser.add_argument(
         "-n", "--dry-run", action="store_true", help="show what would change and write nothing"

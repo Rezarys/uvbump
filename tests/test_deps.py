@@ -25,6 +25,8 @@ dev = ["pytest>=8.0", { include-group = "docs" }]
 
 [tool.uv]
 dev-dependencies = ["ruff>=0.4"]
+constraint-dependencies = ["urllib3>=2.0"]
+override-dependencies = ["werkzeug>=3.0"]
 """
 
 LATEST = {
@@ -36,6 +38,8 @@ LATEST = {
     "sphinx": "8.1.0",
     "pytest": "8.3.0",
     "ruff": "0.6.0",
+    "urllib3": "2.2.3",
+    "werkzeug": "3.1.3",
 }
 
 
@@ -49,16 +53,29 @@ class TestCollect(unittest.TestCase):
         self.requirements = collect(load(DOCUMENT))
         self.by_name = {r.name: r for r in self.requirements}
 
-    def test_reads_every_table(self):
+    def test_reads_the_six_tables(self):
         self.assertEqual(
             sorted(self.by_name),
-            ["attrs", "click", "pytest", "requests", "rich", "ruff", "sphinx", "typing-extensions"],
+            [
+                "attrs",
+                "click",
+                "pytest",
+                "requests",
+                "rich",
+                "ruff",
+                "sphinx",
+                "typing-extensions",
+                "urllib3",
+                "werkzeug",
+            ],
         )
 
     def test_records_the_table_each_entry_came_from(self):
         self.assertEqual(self.by_name["sphinx"].table, "project.optional-dependencies.docs")
         self.assertEqual(self.by_name["pytest"].table, "dependency-groups.dev")
         self.assertEqual(self.by_name["ruff"].table, "tool.uv.dev-dependencies")
+        self.assertEqual(self.by_name["urllib3"].table, "tool.uv.constraint-dependencies")
+        self.assertEqual(self.by_name["werkzeug"].table, "tool.uv.override-dependencies")
 
     def test_ignores_direct_url_references_and_include_group(self):
         self.assertNotIn("packaging", self.by_name)
@@ -154,6 +171,8 @@ class TestApply(unittest.TestCase):
         self.assertIn('"packaging @ https://example.invalid/packaging.whl"', result)
         self.assertIn('docs = ["sphinx>=8.1.0"]', result)
         self.assertIn('dev-dependencies = ["ruff>=0.6.0"]', result)
+        self.assertIn('constraint-dependencies = ["urllib3>=2.2.3"]', result)
+        self.assertIn('override-dependencies = ["werkzeug>=3.1.3"]', result)
         self.assertIn('{ include-group = "docs" }', result)
         self.assertEqual(len(result.splitlines()), len(DOCUMENT.splitlines()))
 

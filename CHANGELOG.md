@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Reads `tool.uv.override-dependencies` as well, which brings the count to six tables. 0.1.0 read five, and the README wrongly said it read every table uv understands.
+- Documents that `--check` exits 0 when a bound that is behind the index is held back by an upper bound or by a second anchor. That was already true in 0.1.0 and the README said the opposite.
+
 ## 0.1.0
 
 First release.

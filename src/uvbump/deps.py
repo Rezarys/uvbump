@@ -104,7 +104,9 @@ def _entries(value: object, table: str) -> list[Requirement]:
 
 
 def collect(document: dict) -> list[Requirement]:
-    """Every requirement of every dependency table uv understands."""
+    """The requirements of the six tables uvbump reads: `project.dependencies`,
+    `project.optional-dependencies`, `dependency-groups`, `tool.uv.dev-dependencies`,
+    `tool.uv.constraint-dependencies` and `tool.uv.override-dependencies`."""
     found: list[Requirement] = []
     project = document.get("project")
     if isinstance(project, dict):
@@ -124,6 +126,8 @@ def collect(document: dict) -> list[Requirement]:
             found += _entries(uv_table.get("dev-dependencies"), "tool.uv.dev-dependencies")
             constraints = uv_table.get("constraint-dependencies")
             found += _entries(constraints, "tool.uv.constraint-dependencies")
+            overrides = uv_table.get("override-dependencies")
+            found += _entries(overrides, "tool.uv.override-dependencies")
     return found
 
 

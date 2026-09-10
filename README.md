@@ -25,13 +25,14 @@ The diff is one line per bound. Comments, key order, quoting style and blank lin
 
 ## What it reads
 
-Every dependency table that uv understands, not just the first one:
+The six tables it reads:
 
 - `project.dependencies`
 - `project.optional-dependencies.*`
 - `dependency-groups.*`
 - `tool.uv.dev-dependencies`
 - `tool.uv.constraint-dependencies`
+- `tool.uv.override-dependencies`
 
 ## What it writes
 
@@ -53,6 +54,7 @@ Worth knowing before you run it:
 - It is not on PyPI yet.
 - It reads the index, not your environment. It offers the latest release, without checking that release against your `requires-python` or against what your other dependencies allow. `uv lock` is what tells you whether the set still resolves, which is why uvbump runs it for you unless you pass `--no-lock`.
 - A requirement with two bounds to move, such as `pkg>=1.0,==2.0`, is left alone rather than guessed at.
+- Anything left alone is invisible to `--check`, which is the one to know before you put it in CI. When a bound is held back by an upper bound (`click>=8.0,<8.1`) or by a second anchor (`pkg>=1.0,==2.0`), uvbump plans no change, so `--check` exits 0 even though the declared bound is behind the index. It reports the reason on stderr either way. `--check` answers "is there a bound I can move", not "is every bound current".
 - A dependency with no bound at all stays without one. uvbump moves bounds, it does not add them.
 - Markers, extras and direct URL references are carried through untouched, never interpreted.
 - It edits `pyproject.toml` only. Your `requirements.txt` files are not its business.
@@ -63,7 +65,7 @@ Worth knowing before you run it:
 - run: uvx --from git+https://github.com/Rezarys/uvbump uvbump --check
 ```
 
-`--check` writes nothing and exits 1 when a declared bound is behind the index, so a job can fail on a stale `pyproject.toml` the same way it fails on unformatted code. Exit 0 means every bound is current, exit 2 means uvbump could not do its job.
+`--check` writes nothing and exits 1 when it has a bound it can move forward, so a job can fail on a stale `pyproject.toml` the same way it fails on unformatted code. Exit 0 means it has nothing to move, which is not quite the same as every bound being current: read the two cases under [Limits](#limits) before you rely on it. Exit 2 means uvbump could not do its job.
 
 ## Options
 
@@ -71,7 +73,7 @@ Worth knowing before you run it:
 uvbump [PATH] [options]
 
   PATH               pyproject.toml, or the directory holding it (default: ./pyproject.toml)
-  --check            write nothing, exit 1 when a bound is behind the index
+  --check            write nothing, exit 1 when a bound can be moved forward
   -n, --dry-run      show what would change, write nothing, exit 0
   --only NAME        only this dependency, repeatable
   --exclude NAME     never this dependency, repeatable
