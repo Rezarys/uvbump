@@ -128,7 +128,11 @@ No test dependencies either.
 
 ## Prior art
 
-`uv` itself does not do this yet, and the request is one of the most upvoted on its tracker: [astral-sh/uv#6794](https://github.com/astral-sh/uv/issues/6794) and [astral-sh/uv#1419](https://github.com/astral-sh/uv/issues/1419). Several people in those threads have published their own take, and they are worth a look if uvbump is not the shape you want. If uv ships this natively, uvbump has done its job and you should use uv.
+`uv` itself does not do this yet, and the request is one of the most upvoted on its tracker: [astral-sh/uv#6794](https://github.com/astral-sh/uv/issues/6794) and [astral-sh/uv#1419](https://github.com/astral-sh/uv/issues/1419). Several people in those threads have published their own take, and they are worth a look if uvbump is not the shape you want.
+
+The closest match by name and by aim is [`uv-bump`](https://github.com/zundertj/uv-bump), around since February 2025: it bumps the minimum bounds in your `pyproject.toml` in sync with your `uv.lock`, keeps your formatting and your comments, and supports workspaces. It works from a clean project, and its Howto asks you for an up to date `uv.lock` and a synced `.venv` before you run it. Its README documents no check mode and no exit code for CI. uvbump reads the package index directly, so it needs neither a lock file nor a virtual environment to tell you what has moved, and `--check` is there for CI. Comments survive both tools, so that is not a reason to pick one over the other. If `uv-bump` is the shape you want, use it.
+
+If uv ships this natively, uvbump has done its job and you should use uv.
 
 Not affiliated with Astral or with the uv project.
 
