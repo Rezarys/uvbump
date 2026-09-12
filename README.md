@@ -3,10 +3,9 @@
 Upgrades the version bounds declared in your `pyproject.toml`, in place, without touching your comments or your formatting. For anyone whose `pyproject.toml` still says `requests>=2.28` while the lock file has been on 2.32.5 for a year.
 
 ```
-uvx --from git+https://github.com/Rezarys/uvbump uvbump
+pip install uv-pyproject-bump
+uvbump --help
 ```
-
-Not on PyPI yet, so that is the install line for now. See [Install](#install).
 
 `uv lock` and `uv sync --upgrade` move your lock file. They leave the bounds you wrote in `pyproject.toml` exactly where they were, so a project can sit on `requests>=2.28` for two years while actually running 2.32.5. The usual fix is a `uv remove` then `uv add` cycle, which rewrites the file and drops every comment in it. uvbump edits the bound and nothing else.
 
@@ -51,7 +50,6 @@ It never moves a bound backwards, and it never invents a bound you did not write
 
 Worth knowing before you run it:
 
-- It is not on PyPI yet.
 - It reads the index, not your environment. It offers the latest release, without checking that release against your `requires-python` or against what your other dependencies allow. `uv lock` is what tells you whether the set still resolves, which is why uvbump runs it for you unless you pass `--no-lock`.
 - A requirement with two bounds to move, such as `pkg>=1.0,==2.0`, is left alone rather than guessed at.
 - Anything left alone is invisible to `--check`, which is the one to know before you put it in CI. When a bound is held back by an upper bound (`click>=8.0,<8.1`) or by a second anchor (`pkg>=1.0,==2.0`), uvbump plans no change, so `--check` exits 0 even though the declared bound is behind the index. It reports the reason on stderr either way. `--check` answers "is there a bound I can move", not "is every bound current".
@@ -62,7 +60,7 @@ Worth knowing before you run it:
 ## In CI
 
 ```yaml
-- run: uvx --from git+https://github.com/Rezarys/uvbump uvbump --check
+- run: uvx --from uv-pyproject-bump uvbump --check
 ```
 
 `--check` writes nothing and exits 1 when it has a bound it can move forward, so a job can fail on a stale `pyproject.toml` the same way it fails on unformatted code. Exit 0 means it has nothing to move, which is not quite the same as every bound being current: read the two cases under [Limits](#limits) before you rely on it. Exit 2 means uvbump could not do its job.
@@ -103,14 +101,18 @@ $ uvbump --index-url https://my.index/simple
 
 ## Install
 
-uvbump is not on PyPI yet. Today you install it from this repository, which pins you to a commit you can read:
+The distribution on PyPI is named `uv-pyproject-bump`; the command it installs is `uvbump`.
 
 ```console
-$ uvx --from git+https://github.com/Rezarys/uvbump uvbump
-$ pip install git+https://github.com/Rezarys/uvbump@v0.1.0
+$ pip install uv-pyproject-bump
+$ uvx --from uv-pyproject-bump uvbump
 ```
 
-Once it is on PyPI, `uvx uvbump` and `pip install uvbump==0.1.0` will work, and this section will say so.
+Pinning to a commit instead of the PyPI release still works:
+
+```console
+$ pip install git+https://github.com/Rezarys/uvbump@v0.1.0
+```
 
 uvbump needs Python 3.11 or later and has no dependencies. It asks your index over the PEP 691 JSON API, which means a mirror or a private index works too. It sends nothing anywhere else and collects nothing.
 

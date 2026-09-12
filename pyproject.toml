@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "uvbump"
-version = "0.1.0"
+name = "uv-pyproject-bump"
+version = "0.2.0"
 description = "Upgrade the version bounds declared in pyproject.toml, in place, without touching comments or formatting."
 readme = "README.md"
 license = "MIT"
