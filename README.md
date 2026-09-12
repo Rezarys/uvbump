@@ -140,4 +140,4 @@ Not affiliated with Astral or with the uv project.
 
 ## License
 
-MIT.
+MIT. Built with AI assistance, reviewed and tested by me.
