@@ -111,7 +111,7 @@ $ uvx --from uv-pyproject-bump uvbump
 Pinning to a commit instead of the PyPI release still works:
 
 ```console
-$ pip install git+https://github.com/Rezarys/uvbump@v0.1.0
+$ pip install git+https://github.com/Rezarys/uvbump@v0.2.0
 ```
 
 uvbump needs Python 3.11 or later and has no dependencies. It asks your index over the PEP 691 JSON API, which means a mirror or a private index works too. It sends nothing anywhere else and collects nothing.
